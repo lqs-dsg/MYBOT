@@ -179,11 +179,17 @@ Step 10 AgentRunner 负责循环上述过程。
 
 ### 作业清单（Step 9 收尾，每完成一个就 git commit）
 
-- [ ] 作业 0：git init + 首次 commit
-- [ ] 作业 1：重写 mybot/agent/tools/base.py（Tool + ToolResult，按 8/4 笔记要点）
+- [x] 作业 0：git init + 首次 commit（2026-08-05 完成，含 .gitignore）
+- [x] 作业 1：重写 mybot/agent/tools/base.py（2026-08-05 老师评审通过；建议改进：Dict->dict 内置泛型、execute 参数名 kwargs->params）
 - [ ] 作业 2：实现 mybot/agent/tools/registry.py（register/get/tool_names/execute，4 条失败路径全走 ToolResult.error，不抛异常）
 - [ ] 作业 3：补 mybot/agent/__init__.py + mybot/agent/tools/__init__.py（重导出 Tool/ToolResult/ToolRegistry）
 - [ ] 作业 4（加分）：最小 shell.py（asyncio.create_subprocess_shell + 输出截断 2000 字符 + 30s 超时）
+
+### 附：git 已启用（2026-08-05）
+
+- 提交历史：13b67bf（保护现有代码）→ 1308fea（清理误放文件）
+- test_step6.py 已归位到项目根目录
+- 今后每完成一个模块：git add -A && git commit -m "说明"
 
 ### registry.py 验收标准
 
