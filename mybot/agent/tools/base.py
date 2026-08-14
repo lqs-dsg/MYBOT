@@ -19,14 +19,14 @@ class ToolResult:
         return self.text
 
     @classmethod
-    def error(cls, msg: str) -> "ToolResult":
+    def error(cls, message: str) -> "ToolResult":
         """工厂方法：生成错误结果"""
-        return cls(text=msg, is_error=True)
+        return cls(text=message, is_error=True)
 
     @classmethod
-    def ok(cls, msg: str) -> "ToolResult":
+    def ok(cls, message: str) -> "ToolResult":
         """工厂方法：生成正常成功结果"""
-        return cls(text=msg, is_error=False)
+        return cls(text=message, is_error=False)
 
 
 class Tool(ABC):

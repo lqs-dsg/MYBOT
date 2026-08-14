@@ -187,9 +187,24 @@ Step 10 AgentRunner 负责循环上述过程。
 
 ### 附：git 已启用（2026-08-05）
 
-- 提交历史：13b67bf（保护现有代码）→ 1308fea（清理误放文件）
+- 提交历史：13b67bf（保护现有代码）→ 1308fea（清理误放文件）→ 36f799a（registry 初版）
 - test_step6.py 已归位到项目根目录
 - 今后每完成一个模块：git add -A && git commit -m "说明"
+
+## 今日收尾（2026-08-05 晚）
+
+- ✅ base.py 重写并通过老师评审（作业 1）
+- ✅ registry.py 修复 1-4 通过老师复查：
+  1. 导入改为相对导入 `from .base import ...`
+  2. tool_names / execute 缩进收进类
+  3. _normalize_params 挪到类级且定义在 execute 之前
+  4. base.py 的 error/ok 签名统一为 message 关键字
+- ⚠️ 修复版【尚未提交】——收工前必须 commit（36f799a 里是坏版本）
+- 📌 明日任务（作业 2 收尾 + 作业 3/4）：
+  - [ ] 写 test_registry.py（5 用例：正常/JSON字符串/未知工具/工具异常/get与tool_names）
+  - [ ] 跑绿后 commit（分两个：registry 一个、test 一个）
+  - [ ] 作业 3：补 mybot/agent/__init__.py + mybot/agent/tools/__init__.py
+  - [ ] 作业 4（加分）：最小 shell.py
 
 ### registry.py 验收标准
 
