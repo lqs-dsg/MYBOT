@@ -181,9 +181,23 @@ Step 10 AgentRunner 负责循环上述过程。
 
 - [x] 作业 0：git init + 首次 commit（2026-08-05 完成，含 .gitignore）
 - [x] 作业 1：重写 mybot/agent/tools/base.py（2026-08-05 老师评审通过；建议改进：Dict->dict 内置泛型、execute 参数名 kwargs->params）
-- [ ] 作业 2：实现 mybot/agent/tools/registry.py（register/get/tool_names/execute，4 条失败路径全走 ToolResult.error，不抛异常）
-- [ ] 作业 3：补 mybot/agent/__init__.py + mybot/agent/tools/__init__.py（重导出 Tool/ToolResult/ToolRegistry）
-- [ ] 作业 4（加分）：最小 shell.py（asyncio.create_subprocess_shell + 输出截断 2000 字符 + 30s 超时）
+- [x] 作业 2：实现 mybot/agent/tools/registry.py + test_ToolRegistry.py 测试全绿（2026-08-05 完成）
+- [x] 作业 3：补 mybot/agent/__init__.py + mybot/agent/tools/__init__.py（重导出 Tool/ToolResult/ToolRegistry，2026-08-05 完成）
+- [x] 作业 4（加分）：最小 shell.py —— ✅ 完成（2026-08-05，df92084）
+  - ShellTool：asyncio.create_subprocess_shell + 30s 超时 + 2000字符截断 + stderr 收集
+  - test_shell.py：Test1 正常命令 / Test2 exit 3 / Test3 超长输出截断 / Test4 超时（ping 35s 触发）全绿
+  - 🐛 排障实录（重要一课）："幽灵导入"——pip 可编辑安装的旧项目 codex\mybot 遮蔽 lqs\mybot；
+    脚本放包目录内时 sys.path[0] 不是项目根 → import 到旧代码。排查用 module.__file__。
+    修复：测试文件放项目根目录 + pip uninstall mybot（待确认执行）
+  - 🐛 shell.py 踩坑：required 用集合{"command"}应为列表、eerors/errors 拼写、ToolResult.success 不存在、ToolResul.ok 少 t
+
+## Step 9 完成（工具层 ✅ 2026-08-05）
+
+- ✅ Tool 基类 + ToolResult
+- ✅ ToolRegistry（4 条失败路径全走 ToolResult.error）
+- ✅ ShellTool（第一个真工具）
+- ✅ 测试：test_ToolRegistry.py（5 用例）+ test_shell.py（4 用例）全绿
+- ➡️ 下一步：**Step 10 AgentRunner**（agent 的心脏）——连接 Provider + ToolRegistry + Session
 
 ### 附：git 已启用（2026-08-05）
 
