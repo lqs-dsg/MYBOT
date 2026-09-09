@@ -12,6 +12,8 @@ class ToolRegistry:
 
     def get(self, name: str) -> Optional[Tool]:
         return self._tools.get(name)
+    def get_definitions(self)->list:
+        return  [tool.to_schema() for tool in self._tools.values()]
 
     def _normalize_params(self, params: Any) -> Dict[str, Any]:
         """私有辅助：把输入参数统一转为dict"""
