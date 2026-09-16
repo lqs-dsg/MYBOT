@@ -1,4 +1,4 @@
-﻿[project]
+[project]
 name = "mybot"
 version = "0.1.0"
 description = "A personal AI agent - built from scratch"
