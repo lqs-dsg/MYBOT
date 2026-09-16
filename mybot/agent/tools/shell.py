@@ -16,8 +16,8 @@ class ShellTool(Tool):
       },
         "required":["command"],
     }
-    async def execute(self, **kwargs) -> ToolResult:
-        command =kwargs["command"]
+    async def execute(self, command:str) -> ToolResult:
+
         proc: asyncio.subprocess.Process | None = None
         try:
             proc =await asyncio.create_subprocess_shell(

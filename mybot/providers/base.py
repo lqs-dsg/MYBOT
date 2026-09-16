@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 
+
 @dataclass(frozen=True)
 class GenerationSettings:
     """模型生成通用参数"""
