@@ -29,6 +29,17 @@ from mybot.session.manager import SessionManager
 
 app = typer.Typer(help="mybot —— 个人 AI Agent")
 
+
+@app.callback()
+def main() -> None:
+    """mybot —— 个人 AI Agent
+
+    加这个 callback 的作用：把 CLI 变成【多命令模式】。
+    否则 Typer 见到"只有一个命令"会把它当成默认命令，
+    于是 `mybot agent -m "hi"` 会报 "Got unexpected extra argument (agent)"。
+    """
+
+
 # 单轮对话的等待上限（秒）：给模型多轮工具调用留足时间
 TURN_TIMEOUT = 300
 
@@ -68,7 +79,7 @@ def build_loop(config: Config, workspace: Path) -> tuple[AgentLoop, MessageBus]:
 
     # 工具注册表
     tools = ToolRegistry()
-    tools.register(ShellTool())                       # ★ ShellTool 无构造参数
+    tools.register(ShellTool(workspace=workspace))    # ★ shell 命令绑定在 workspace 里执行
 
     # 执行层 / 数据层 / 组装层
     runner = AgentRunner(provider=provider, tools=tools, max_iterations=8)
@@ -160,9 +171,16 @@ def agent(
         typer.echo(f"加载配置失败：{e}", err=True)
         raise typer.Exit(code=1)
 
-    # ② 定 workspace（没传就用默认 ~/.mybot/workspace）
-    if workspace is None:
-        workspace = get_workspace_path()
+    # ② 定 workspace
+    #    没传 → 默认 ~/.mybot/workspace
+    #    传了 → 用指定的，并确保目录存在（否则 shell 工具的 cwd 会失败）
+    try:
+        workspace = get_workspace_path(workspace)
+    except OSError as e:
+        target = workspace if workspace else "~/.mybot/workspace"
+        typer.echo(f"错误：无法创建 workspace 目录 {target}：{e}\n"
+                   f"提示：可以用 --workspace 指定一个可写目录", err=True)
+        raise typer.Exit(code=1)
 
     # ③ 装配
     try:
@@ -171,9 +189,15 @@ def agent(
         typer.echo(f"初始化 Agent 失败：{e}", err=True)
         raise typer.Exit(code=1)
 
-    # ④ 跑
-    if message is not None:
-        result = asyncio.run(run_once(agent_loop, bus, message, chat_id))
-        typer.echo(result)
-    else:
-        asyncio.run(interactive(agent_loop, bus, chat_id))
+    # ④ 跑（API 报错/网络异常也要给人话，不要甩 traceback）
+    try:
+        if message is not None:
+            result = asyncio.run(run_once(agent_loop, bus, message, chat_id))
+            typer.echo(result)
+        else:
+            asyncio.run(interactive(agent_loop, bus, chat_id))
+    except KeyboardInterrupt:
+        typer.echo("\n已退出")
+    except Exception as e:
+        typer.echo(f"对话失败：{type(e).__name__}: {e}", err=True)
+        raise typer.Exit(code=1)

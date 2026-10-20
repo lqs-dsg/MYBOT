@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 from typing import Any
 from .base import Tool,ToolResult
 
@@ -16,7 +17,19 @@ class ShellTool(Tool):
       },
         "required":["command"],
     }
+
+    def __init__(self, workspace: Path | None = None):
+        """workspace: 命令在哪个目录下执行（None = 继承当前进程的工作目录）
+
+        绑定 workspace 的意义：agent 的操作被限制在它自己的地盘里，
+        而不是跟着"你在哪里敲的命令"到处跑。
+        """
+        self.workspace = Path(workspace) if workspace is not None else None
+
     async def execute(self, command:str) -> ToolResult:
+
+        if self.workspace is not None and not self.workspace.is_dir():
+            return ToolResult.error(f"工作目录不存在: {self.workspace}")
 
         proc: asyncio.subprocess.Process | None = None
         try:
@@ -24,6 +37,7 @@ class ShellTool(Tool):
                 command,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
+                cwd=str(self.workspace) if self.workspace else None,   # ★ 在 workspace 里执行
             )
             stdout,stderr =await asyncio.wait_for(proc.communicate(),timeout=30)
         except asyncio.TimeoutError:
