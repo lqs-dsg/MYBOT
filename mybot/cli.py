@@ -26,7 +26,7 @@ from mybot.config.schema import Config
 from mybot.providers.base import LLMProvider
 from mybot.providers.openai_compat import OpenAICompatProvider
 from mybot.session.manager import SessionManager
-
+from mybot.agent.tools.filesystem import ReadFileTool, WriteFileTool,ListFilesTool
 app = typer.Typer(help="mybot —— 个人 AI Agent")
 
 
@@ -80,6 +80,9 @@ def build_loop(config: Config, workspace: Path) -> tuple[AgentLoop, MessageBus]:
     # 工具注册表
     tools = ToolRegistry()
     tools.register(ShellTool(workspace=workspace))    # ★ shell 命令绑定在 workspace 里执行
+    tools.register(ReadFileTool(workspace=workspace))
+    tools.register(WriteFileTool(workspace=workspace))
+    tools.register(ListFilesTool(workspace=workspace)) 
 
     # 执行层 / 数据层 / 组装层
     runner = AgentRunner(provider=provider, tools=tools, max_iterations=8)
