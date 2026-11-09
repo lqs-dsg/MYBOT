@@ -34,6 +34,9 @@ class AgentRunner:
                     "role": "tool",
                     "tool_call_id": call["id"],
                     "content": str(result),
+                    # ★ 内部标记：工具是否报错。仅供本地分析（Evals 归因、调试），
+                    #    _to_api_messages 的白名单会把它剥掉，不会发给 API
+                    "_is_error": result.is_error,
                 })
             # ← 内层 for 结束，回到外层 for 开头，再问模型一轮
 

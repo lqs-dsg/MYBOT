@@ -1,0 +1,30 @@
+id: retry_after_missing
+category: error_recovery
+description: 首次读取不存在的文件失败，修正路径后重试成功
+setup_files:
+  "secret.txt": "项目预算50万"
+input: "读一下 secret.txt 的内容"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "wrong.txt"}'
+  - tool_calls:
+      - id: call_2
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "secret.txt"}'
+  - content: "文件内容是：项目预算50万"
+graders:
+  - type: tool_sequence
+    expect: ["read_file", "read_file"]
+    mode: contains
+  - type: recovered_after_error
+    any_of: ["预算", "50万"]
+  - type: tool_result_contains
+    any_of: ["预算"]
+  - type: max_iterations
+    value: 5

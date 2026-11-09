@@ -1,0 +1,13 @@
+id: greeting
+category: no_tool_needed
+description: 用户单纯打招呼，不需要调用任何工具
+setup_files: {}
+input: "你好啊，今天怎么样？"
+script:
+  - content: "你好啊，我挺好的，有什么可以帮你的吗？"
+graders:
+  - type: not_tool_used
+  - type: final_answer_contains
+    any_of: ["你好"]
+  - type: max_iterations
+    value: 2

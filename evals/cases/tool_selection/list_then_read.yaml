@@ -1,0 +1,29 @@
+id: list_then_read
+category: tool_selection
+description: 先列目录再读文件，应依次调用 list_files 和 read_file
+setup_files:
+  "todo.md": "下午三点开会，整理周报"
+input: "先列出当前目录下的文件，然后读一下 todo.md 的内容"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: list_files
+          arguments: '{"path": "."}'
+  - tool_calls:
+      - id: call_2
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "todo.md"}'
+  - content: "目录里有 todo.md，内容是：下午三点开会，整理周报"
+graders:
+  - type: tool_sequence
+    expect: ["list_files", "read_file"]
+    mode: prefix
+  - type: tool_result_contains
+    any_of: ["开会", "周报"]
+  - type: no_tool_error
+  - type: max_iterations
+    value: 4

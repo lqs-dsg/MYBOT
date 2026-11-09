@@ -19,3 +19,7 @@ Thumbs.db
 # 测试框架缓存
 .pytest_cache/
 pytest-cache-files-*/
+
+# agent 运行时产物（会话历史、evals 结果存档）
+sessions/
+evals/results/
