@@ -18,6 +18,8 @@ class Case:
     description: str = ""
     setup_files: Dict[str, str] = field(default_factory=dict)   # 相对路径 -> 文件内容
     script: Optional[List[Dict]] = None                         # deterministic 模式的剧本
+    modes: Optional[List[str]] = None                           # 适用模式；None = 两种都适用
+                                                                # 例：["deterministic"] 表示只在剧本模式跑
 
 
 def load_cases(root: Path) -> List[Case]:

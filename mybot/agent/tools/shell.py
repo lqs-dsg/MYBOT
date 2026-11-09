@@ -6,8 +6,10 @@ from .base import Tool,ToolResult
 class ShellTool(Tool):
     name ="shell"
     description=(
-        "在本地系统执行shell等命令，用于查看文件，运行脚本，查询系统信息"
-        "注意：谨慎执破坏性命令；单次执行最长30秒，输出会被截断"
+        "执行系统命令（运行脚本、构建项目、查看系统信息、文件复制/移动等）。"
+        "⚠️ 读取/写入/列出文件内容请优先使用 read_file / write_file / list_files 专用工具，"
+        "本工具只用于真正需要执行命令的场景。"
+        "注意：谨慎执行破坏性命令；单次执行最长30秒，输出会被截断"
     )
     parameters ={
         "type":"object",

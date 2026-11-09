@@ -6,6 +6,7 @@
 """
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 from mybot.agent.context import ContextBuilder
@@ -20,6 +21,7 @@ from mybot.session.manager import SessionManager
 
 from .graders import Trajectory, grade
 from .loader import Case
+from .report import CaseResult
 
 EVAL_CHAT_ID = "default"
 
@@ -108,11 +110,12 @@ def extract_trajectory(messages: list, final_answer: str, iterations: int) -> Tr
 
 
 # ==================== 跑一个用例 ====================
-async def run_case(case: Case, live_provider_factory=None):
-    """返回 (Trajectory, passed, reason)
+async def run_case(case: Case, live_provider_factory=None) -> CaseResult:
+    """跑一个用例，返回带指标的 CaseResult
 
     live_provider_factory: 传 callable 则用真实模型跑 live 模式；None → deterministic
     """
+    t0 = time.perf_counter()
     ws = Path(tempfile.mkdtemp(prefix="eval_"))
     try:
         # ① 准备沙箱文件
@@ -137,6 +140,20 @@ async def run_case(case: Case, live_provider_factory=None):
 
         # ⑤ 评分
         ok, reason = grade(case, traj)
-        return traj, ok, reason
+        latency_ms = (time.perf_counter() - t0) * 1000
+
+        return CaseResult(
+            case_id=case.id,
+            category=case.category,
+            passed=ok,
+            reason=reason,
+            iterations=provider.calls,
+            tool_calls=len(traj.tool_calls),
+            tool_errors=traj.tool_error_count,
+            latency_ms=round(latency_ms, 1),
+            prompt_tokens=provider.prompt_tokens,
+            completion_tokens=provider.completion_tokens,
+            tool_call_names=[c["function"]["name"] for c in traj.tool_calls],
+        )
     finally:
         shutil.rmtree(ws, ignore_errors=True)

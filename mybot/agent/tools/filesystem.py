@@ -35,7 +35,11 @@ class _WorkspaceBoundTool(Tool):
 # ==================== 读文件 ====================
 class ReadFileTool(_WorkspaceBoundTool):
     name = "read_file"
-    description = "读取文本文件内容（带行号）。文件较大时可用 offset/limit 分页读取"
+    description = (
+        "读取文件内容（带行号）。用途：查看文件内容、统计行数、确认文件是否存在。"
+        "文件较大时可用 offset/limit 分页读取。"
+        "⚠️ 查看/读取文件请用本工具，不要用 shell 的 type/cat/findstr 等命令。"
+    )
     parameters = {
         "type": "object",
         "properties": {
@@ -53,9 +57,15 @@ class ReadFileTool(_WorkspaceBoundTool):
             return ToolResult.error(str(e))
 
         if not target.exists():
-            return ToolResult.error(f"文件不存在：{path}")
+            return ToolResult.error(
+                f"文件不存在：{path}\n"
+                f"提示：先用 list_files 查看目录里有哪些文件，找到正确路径后重试"
+            )
         if target.is_dir():
-            return ToolResult.error(f"路径是目录，不是文件：{path}（想看目录内容请用 list_files）")
+            return ToolResult.error(
+                f"路径是目录，不是文件：{path}\n"
+                f"提示：用 list_files 查看该目录的内容"
+            )
 
         try:
             text = target.read_text(encoding="utf-8")

@@ -1,0 +1,27 @@
+id: count_files
+category: tool_selection
+description: 问目录里有几个文件，应调用 list_files 数一数，而不是瞎编
+setup_files:
+  "a.txt": "1"
+  "b.txt": "2"
+  "c.txt": "3"
+input: "当前目录里有几个文件？"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: list_files
+          arguments: '{"path": "."}'
+  - content: "当前目录有 3 个文件：a.txt、b.txt、c.txt"
+graders:
+  - type: tool_sequence
+    expect: ["list_files"]
+    mode: contains
+  - type: tool_result_contains
+    any_of: ["a.txt", "b.txt"]
+  - type: no_tool_error
+  - type: final_answer_contains
+    any_of: ["3"]
+  - type: max_iterations
+    value: 3

@@ -1,0 +1,30 @@
+id: write_json_verify
+category: multi_step
+description: 写一个 JSON 文件，再读回来确认内容正确（写 → 读校验）
+setup_files: {}
+input: "把 {'name': 'mybot', 'version': '0.1'} 写入 info.json，然后读回来确认"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: write_file
+          arguments: '{"path": "info.json", "content": "{\"name\": \"mybot\", \"version\": \"0.1\"}"}'
+  - tool_calls:
+      - id: call_2
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "info.json"}'
+  - content: "已写入并确认：info.json 内容为 {\"name\": \"mybot\", \"version\": \"0.1\"}"
+graders:
+  - type: tool_sequence
+    expect: ["write_file", "read_file"]
+    mode: contains
+  - type: tool_result_contains
+    any_of: ["mybot", "version"]
+  - type: no_tool_error
+  - type: final_answer_contains
+    any_of: ["mybot"]
+  - type: max_iterations
+    value: 5

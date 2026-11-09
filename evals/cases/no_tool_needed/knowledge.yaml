@@ -1,0 +1,13 @@
+id: knowledge
+category: no_tool_needed
+description: 知识问答不需要工具，直接回答
+setup_files: {}
+input: "Python 的 GIL 是什么？用一句话解释"
+script:
+  - content: "GIL 是全局解释器锁，保证同一时刻只有一个线程执行 Python 字节码"
+graders:
+  - type: not_tool_used
+  - type: final_answer_contains
+    any_of: ["GIL", "锁", "线程"]
+  - type: max_iterations
+    value: 2

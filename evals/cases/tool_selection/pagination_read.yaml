@@ -1,0 +1,55 @@
+id: pagination_read
+category: tool_selection
+description: 只读大文件的指定行段，应使用 offset/limit 分页而不是全文件读取
+setup_files:
+  "big.txt": |
+    line01
+    line02
+    line03
+    line04
+    line05
+    line06
+    line07
+    line08
+    line09
+    line10
+    line11
+    line12
+    line13
+    line14
+    line15
+    line16
+    line17
+    line18
+    line19
+    line20
+    line21
+    line22
+    line23
+    line24
+    line25
+    line26
+    line27
+    line28
+    line29
+    line30
+input: "big.txt 里第 10 到 15 行是什么？"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "big.txt", "offset": 9, "limit": 6}'
+  - content: "第 10-15 行是：line10、line11、line12、line13、line14、line15"
+graders:
+  - type: tool_sequence
+    expect: ["read_file"]
+    mode: contains
+  - type: tool_result_contains
+    any_of: ["line10", "line11"]
+  - type: no_tool_error
+  - type: final_answer_contains
+    any_of: ["line10", "line15"]
+  - type: max_iterations
+    value: 3

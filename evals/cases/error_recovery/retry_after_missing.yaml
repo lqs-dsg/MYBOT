@@ -1,6 +1,7 @@
 id: retry_after_missing
 category: error_recovery
-description: 首次读取不存在的文件失败，修正路径后重试成功
+description: 首次读取不存在的文件失败，修正路径后重试成功（确定性专用：需要人为制造错误）
+modes: [deterministic]
 setup_files:
   "secret.txt": "项目预算50万"
 input: "读一下 secret.txt 的内容"

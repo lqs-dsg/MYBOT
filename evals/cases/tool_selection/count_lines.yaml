@@ -1,0 +1,29 @@
+id: count_lines
+category: tool_selection
+description: 问文件有多少行，应读取文件后计数，而不是瞎编
+setup_files:
+  "todo.md": |
+    第一行
+    第二行
+    第三行
+    第四行
+input: "todo.md 一共有多少行？"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "todo.md"}'
+  - content: "todo.md 一共有 4 行"
+graders:
+  - type: tool_sequence
+    expect: ["read_file"]
+    mode: contains
+  - type: tool_result_contains
+    any_of: ["第四行"]
+  - type: no_tool_error
+  - type: final_answer_contains
+    any_of: ["4"]
+  - type: max_iterations
+    value: 3

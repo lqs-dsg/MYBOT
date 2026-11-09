@@ -1,0 +1,40 @@
+id: three_step_summary
+category: multi_step
+description: 三步任务：列目录 → 读 README 前几行 → 把第一行写进 summary.txt
+setup_files:
+  "README.md": |
+    # 我的项目
+    这是一个测试项目
+    更多内容在这里
+input: "先看看当前目录有什么文件，读一下 README.md 的前 5 行，然后把第一行写进 summary.txt"
+script:
+  - tool_calls:
+      - id: call_1
+        type: function
+        function:
+          name: list_files
+          arguments: '{"path": "."}'
+  - tool_calls:
+      - id: call_2
+        type: function
+        function:
+          name: read_file
+          arguments: '{"path": "README.md", "limit": 5}'
+  - tool_calls:
+      - id: call_3
+        type: function
+        function:
+          name: write_file
+          arguments: '{"path": "summary.txt", "content": "# 我的项目"}'
+  - content: "已完成：summary.txt 写入了 README 的第一行「# 我的项目」"
+graders:
+  - type: tool_sequence
+    expect: ["list_files", "read_file", "write_file"]
+    mode: prefix
+  - type: tool_result_contains
+    any_of: ["我的项目"]
+  - type: no_tool_error
+  - type: final_answer_contains
+    any_of: ["完成", "写"]
+  - type: max_iterations
+    value: 6
