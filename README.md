@@ -76,7 +76,7 @@ python -m evals run --compare last                   # 与上次对比
 ## 🧪 测试
 
 ```bash
-pytest -q        # 42 个单元测试
+pytest -q        # 31 个 pytest 测试（另有 2 个集成脚本：test_step6.py / test_ToolRegistry.py）
 ```
 
 覆盖：配置加载 / 消息总线 / Provider（含 HTTP 请求体断言）/ 工具执行与路径穿越防护 / Session / ContextBuilder / AgentLoop（跨 turn 记忆、工具落盘、异常韧性）。

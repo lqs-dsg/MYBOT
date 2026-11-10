@@ -1,4 +1,4 @@
-"""验证 loader 完善项的集成测试"""
+﻿"""验证 loader 完善项的集成测试"""
 import json, os, sys, tempfile
 from pathlib import Path
 sys.path.insert(0, '.')
@@ -8,18 +8,18 @@ from mybot.config.loader import (
     DEFAULT_CONFIG_PATH,
 )
 
-def test_default_path():
+def run_default_path():
     assert get_config_path() == DEFAULT_CONFIG_PATH, '默认路径应为 ~/.mybot/config.json'
     print('  [OK] get_config_path 默认值')
 
-def test_set_get():
+def run_set_get():
     test_path = Path(tempfile.gettempdir()) / 'mybot_test_config.json'
     set_config_path(test_path)
     assert get_config_path() == test_path, 'set 后 get 应返回新值'
     print('  [OK] set_config_path -> get_config_path')
     return test_path
 
-def test_load_config(test_path):
+def run_load_config(test_path):
     config_json = {'providers': {'openai': {'apiKey': 'sk-test123', 'model': 'gpt-4'}}}
     os.makedirs(test_path.parent, exist_ok=True)
     with open(test_path, 'w', encoding='utf-8') as f:
@@ -31,7 +31,7 @@ def test_load_config(test_path):
     print('  [OK] load_config 读取 + camelCase->snake_case 转换')
     return config
 
-def test_save_config(config, test_path):
+def run_save_config(config, test_path):
     save_config(config, test_path)
     with open(test_path, 'r', encoding='utf-8') as f:
         saved = json.load(f)
@@ -39,7 +39,7 @@ def test_save_config(config, test_path):
     assert saved['providers']['openai']['model'] == 'gpt-4'
     print('  [OK] save_config 写回 camelCase JSON')
 
-def test_env_var_resolution(test_path):
+def run_env_var_resolution(test_path):
     os.environ['MYBOT_TEST_VAR'] = 'resolved_value'
     config_json = {'providers': {'openai': {'apiKey': '${MYBOT_TEST_VAR}'}}}
     with open(test_path, 'w', encoding='utf-8') as f:
@@ -51,7 +51,7 @@ def test_env_var_resolution(test_path):
     )
     print('  [OK] ${MYBOT_TEST_VAR} 环境变量替换')
 
-def test_paths_lazy_import(test_path):
+def run_paths_lazy_import(test_path):
     set_config_path(test_path)
     from mybot.config.paths import get_config_path as paths_get_config_path
     result = paths_get_config_path()
@@ -60,12 +60,12 @@ def test_paths_lazy_import(test_path):
 
 if __name__ == '__main__':
     print('=== Test Step 6: loader 完善 ===')
-    test_default_path()
-    tp = test_set_get()
-    cfg = test_load_config(tp)
-    test_save_config(cfg, tp)
-    test_env_var_resolution(tp)
-    test_paths_lazy_import(tp)
+    run_default_path()
+    tp = run_set_get()
+    cfg = run_load_config(tp)
+    run_save_config(cfg, tp)
+    run_env_var_resolution(tp)
+    run_paths_lazy_import(tp)
 
     # cleanup
     os.remove(tp)
