@@ -5,6 +5,10 @@ on:
     branches: [master, main]
   pull_request:
 
+env:
+  # Windows runner 默认编码不是 UTF-8，输出中文会 UnicodeEncodeError
+  PYTHONIOENCODING: utf-8
+
 jobs:
   test:
     # 用 windows 跑：本项目在 Windows 上开发（shell 工具/评测用例含 Windows 路径），
@@ -25,7 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: 单元测试（42 个）
+      - name: 单元测试
         run: pytest -q
 
       - name: 确定性评测（不联网、零成本、秒级）
